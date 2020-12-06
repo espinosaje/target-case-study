@@ -12,7 +12,8 @@ public class Product {
   
   @Column(name="name")	// former: currency_from
   private String name;
-  
+  @Column(name="cost")	// former: currency_from
+  private String cost;
   
   public Product() {
     
