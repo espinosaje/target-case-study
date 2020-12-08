@@ -1,4 +1,4 @@
-From openjdk:8
+FROM openjdk:8
 Expose 8082
-Add target /target-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/target-0.0.1-SNAPSHOT.jar"]
+ADD target/target-case-study.jar target-case-study.jar
+ENTRYPOINT ["java","-jar","target-case-study.jar"]
