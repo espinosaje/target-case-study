@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 //import springfox.documentation.annotations.ApiIgnore;
 import org.springframework.web.client.RestTemplate;
 
+import com.casestudy.target.name.entities.Item;
+import com.casestudy.target.name.entities.Product;
+
 @RestController
 @RequestMapping("/product")
 public class RedSkyProductController {

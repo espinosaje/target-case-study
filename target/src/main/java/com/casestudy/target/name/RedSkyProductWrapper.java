@@ -1,5 +1,6 @@
 package com.casestudy.target.name;
 
+import com.casestudy.target.name.entities.Product;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

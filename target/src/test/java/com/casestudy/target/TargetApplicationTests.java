@@ -12,9 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.casestudy.target.name.Item;
 import com.casestudy.target.name.RedSkyProductWrapper;
-import com.casestudy.target.name.Product;
+import com.casestudy.target.name.entities.Item;
+import com.casestudy.target.name.entities.Product;
 
 @SpringBootTest
 class TargetApplicationTests {
