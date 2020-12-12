@@ -1,4 +1,4 @@
-package com.casestudy.target;
+package com.casestudy.target.product;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
