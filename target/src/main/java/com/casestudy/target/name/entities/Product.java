@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Product {
 
     private Item item;
+    private AvailableToPromiseNetwork available_to_promise_network;
 
     public Product() {
 
@@ -24,6 +25,14 @@ public class Product {
 		this.item = item;
 	}
  
+	public AvailableToPromiseNetwork getAvailable_to_promise_network() {
+		return available_to_promise_network;
+	}
+
+	public void setAvailable_to_promise_network(AvailableToPromiseNetwork available_to_promise_network) {
+		this.available_to_promise_network = available_to_promise_network;
+	}
+
 	@Override
     public String toString() {
         return "{" +

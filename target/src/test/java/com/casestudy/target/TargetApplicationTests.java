@@ -23,6 +23,15 @@ class TargetApplicationTests {
 	
 	@Value("${redsky.endpoint}")
 	private String request;
+	
+	@Value("${localhost.endpoint}")
+	private String localhost;
+	
+	@Value("${localhost.aggregatedproduct}")
+	private String aggregatedproductUri;
+	
+	@Value("${test.aggregatedproduct.id}")
+	private String aggregatedproductId;
 
 	@Test
 	void contextLoads() {
@@ -56,18 +65,12 @@ class TargetApplicationTests {
 	
 	@Test
 	public void getAggregatedProduct() {
-
+		System.out.println("@@@ Starting getAggregatedProduct Test @@@ ");
 		RestTemplate restTemplate = new RestTemplate();
 		
-		String request_ap = "http://localhost:8080/product/aggregatedProduct/10002";
-
-		System.out.println("@@@ Starting getAggregatedProduct Test @@@ ");
-		// actual service call
-		AggregatedProduct productEntity = (AggregatedProduct) restTemplate.getForObject(request_ap,AggregatedProduct.class);
-		System.out.println("###### productEntity.getClass: " + productEntity.getClass());
-		System.out.println("###### productEntity.isNull: " + (productEntity == null));
-		System.out.println("###### productEntity.getName: " + productEntity.getName());
-		System.out.println("###### productEntity.getProducts.isEmpty: " + productEntity.getCurrent_price());
+		String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
+		//AggregatedProduct productEntity = (AggregatedProduct) restTemplate.getForObject(request_ap,AggregatedProduct.class);
+		//System.out.println("###### productEntity.getProducts.isEmpty: " + productEntity.getCurrent_price());
 	}
 
 }

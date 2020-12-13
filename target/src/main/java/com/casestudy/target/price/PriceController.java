@@ -35,8 +35,8 @@ public class PriceController {
 	    public ResponseEntity<Price> addName(@RequestBody Price productName) {
 
 		 price = priceRepository.save(productName);
-	       // log.info("Saved quote="+name.toString());
-		   System.out.println("Saved quote="+price.toString());
+	     
+		   System.out.println("Saved price="+price.toString());
 	        if (price != null)
 	            return ResponseEntity.status(HttpStatus.CREATED).body(price);
 
@@ -47,12 +47,14 @@ public class PriceController {
 	 @GetMapping("/price/addPriceTemp")
 	    public ResponseEntity<Price> addName(@RequestParam String name
 										, @RequestParam String id
-										, @RequestParam String price ) {
+										, @RequestParam String price
+										, @RequestParam String currency) {
 
 			Price n = new Price();
 			n.setName(name);
 			n.setId(id);
 			n.setPrice(price);
+			n.setCurrency(currency);
 			
 			priceRepository.save(n);
 			if (name != null)

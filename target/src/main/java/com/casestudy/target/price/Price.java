@@ -10,6 +10,7 @@ public class Price {
     private String id;
     private String name;
     private String price;
+    private String currency;
 
     public Price() {
 
@@ -19,6 +20,13 @@ public class Price {
         this.id = id;
         this.name = author;
     }
+    
+	public Price(String id, String name, String price, String currency) {
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.currency = currency;
+	}
 
 	public String getId() {
 		return id;
@@ -44,5 +52,13 @@ public class Price {
 		this.price = price;
 	}
 
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+	
 	
 }
