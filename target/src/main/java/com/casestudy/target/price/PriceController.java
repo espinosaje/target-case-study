@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/product")
 public class PriceController {
 	@Autowired
-    private Price price;
+    private Price price; //TODO, not sure if it needs to be auto-wired
 	
 	@Autowired
 	private PriceRepository priceRepository;
 	
 	 @GetMapping("/price/{id}")
-	 public Optional<Price> retrieveExchangeValue(@PathVariable String id) {
+	 public Optional<Price> getPrice(@PathVariable String id) {
 		 Optional<Price> price = priceRepository.findById(id);
 
 		return price;

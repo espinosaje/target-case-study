@@ -7,10 +7,14 @@ public class CurrentPrice {
 	String currency_code;
 	
 	public CurrentPrice(String value, String currency_code) {
-		super();
 		this.value = value;
 		this.currency_code = currency_code;
 	}
+	
+	public CurrentPrice() {
+
+	}
+	
 	public String getValue() {
 		return value;
 	}

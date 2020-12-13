@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,8 +28,8 @@ import com.casestudy.target.name.entities.Product;
 @RequestMapping("/product")
 public class RedSkyProductController {
 	HttpEntity<String> entityReq;
-	String request;
-
+	@Value("${redsky.endpoint}")
+	private String request;
 
 	public RedSkyProductController() {
 		// set the headers for authentication
@@ -37,8 +38,6 @@ public class RedSkyProductController {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		// headers.set("x-api-key", "2f7b7e46-b66a-4281-8ac4-821cf1a03efb");
 		entityReq = new HttpEntity<String>(headers);
-		
-		request = "https://redsky.target.com/v3/pdp/tcin/13860428?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics&key=candidate";
 	}
 
 	@GetMapping("/names/getName")
