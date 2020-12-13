@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class PriceController {
 	@Autowired
     private Price price; //TODO, not sure if it needs to be auto-wired
@@ -32,7 +32,7 @@ public class PriceController {
 		return price;
 	}
 
-	 @PostMapping("/price/addPrice")	
+	 @PostMapping("/{id}")	
 	    public ResponseEntity<Price> addName(@RequestBody Price productName) {
 
 		 price = priceRepository.save(productName);
@@ -45,7 +45,7 @@ public class PriceController {
 
 	    }
 	 
-	 @GetMapping("/price/addPriceTemp")
+	 @GetMapping("/price/addPrice")
 	    public ResponseEntity<Price> addName(@RequestParam String name
 										, @RequestParam String id
 										, @RequestParam String price
