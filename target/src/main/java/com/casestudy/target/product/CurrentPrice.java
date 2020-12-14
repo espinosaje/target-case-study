@@ -3,10 +3,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrentPrice {
-	String value;
+	double value;
 	String currency_code;
 	
-	public CurrentPrice(String value, String currency_code) {
+	public CurrentPrice(double value, String currency_code) {
 		this.value = value;
 		this.currency_code = currency_code;
 	}
@@ -15,10 +15,10 @@ public class CurrentPrice {
 
 	}
 	
-	public String getValue() {
+	public double getValue() {
 		return value;
 	}
-	public void setValue(String value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 	public String getCurrency_code() {

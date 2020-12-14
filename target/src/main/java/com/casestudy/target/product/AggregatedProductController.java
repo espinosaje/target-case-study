@@ -1,7 +1,11 @@
 package com.casestudy.target.product;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,27 +31,49 @@ public class AggregatedProductController {
 	PriceController priceController;
 	@Autowired
 	RedSkyProductController nameController;
-	
+	@Value("${config.price.default}")
+	boolean isAssignDefaultPrice;
 	Price price;
 	RedSkyProductWrapper productWrapper;
 		
 	@GetMapping("/{id}")
-	public AggregatedProduct retrieveExchangeValue(@PathVariable String id) {
+	public ResponseEntity<AggregatedProduct> retrieveProduct(@PathVariable int id) {
 
 		// get PRICE info from MongoDB
-		price = priceController.getPrice(id).get();
-		// get NAME from external API, need extract internal objects
-		String name = getProductName(id);
+		price = getPrice(id);
+		// get NAME from external API, if it doesn't find one it gets the name from the Price
+		String name = getProductName(String.valueOf(id));
 		
-		//aggregate data
-		//create current Price
-		CurrentPrice currentPrice = new CurrentPrice(price.getPrice(), "USD");
-		//create aggregated product
-		AggregatedProduct aggregatedProduct = new AggregatedProduct(id, name, currentPrice);	
-		
-		System.out.println("###### productEntity.name: " + aggregatedProduct.getName());
-		System.out.println("###### productEntity.price: " + aggregatedProduct.getCurrent_price().getValue());
-		return aggregatedProduct;
+		// if NAME is NULL it means there are no records of Product or Price, there no response to create
+		if (name != null) {
+			//aggregate data
+			//create current Price object, if Price service didn't return anything assign default value
+			double priceValue = 0.0;
+			String currency = "USD";
+			if (price != null) {
+				priceValue = price.getPrice();
+				currency = price.getCurrency();
+				
+			}
+			CurrentPrice currentPrice = new CurrentPrice(priceValue, currency);
+			//create aggregated product
+			AggregatedProduct aggregatedProduct = new AggregatedProduct(id, name, currentPrice);	
+	
+			if (aggregatedProduct != null) {
+				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
+			}
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+	}
+	
+	private Price getPrice(int id) {
+		Optional<Price> optionalPrice = priceController.getPrice(id);
+		if(!optionalPrice.isPresent()) {
+			return null;
+		}
+
+		return priceController.getPrice(id).get();
 	}
 	
 	// get name from the RedSky call, assigns a default value if not found
@@ -74,7 +100,7 @@ public class AggregatedProductController {
 			}
 		}
 		
-		if (name == null) {
+		if (name == null && price != null) {
 			name = price.getName();
 		}
 		return name;

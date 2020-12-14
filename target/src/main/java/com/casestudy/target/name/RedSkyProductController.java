@@ -53,12 +53,12 @@ public class RedSkyProductController {
 		
 		// get the main JSON object from the entity
 		RedSkyProductWrapper productWrapper = (RedSkyProductWrapper) productEntity.getBody();
-		Product product = productWrapper.getProduct();
-		Item item = product.getItem();
+		
 
-		// TODO: add validation
-		return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
-
+		if (productWrapper != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	// no filter was provided for the RedSky endpoint, so it is implemented inside the method

@@ -20,48 +20,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/products")
 public class PriceController {
 	@Autowired
-    private Price price; //TODO, not sure if it needs to be auto-wired
-	
+	private Price price; // TODO, not sure if it needs to be auto-wired
+
 	@Autowired
 	private PriceRepository priceRepository;
-	
-	 @GetMapping("/price/{id}")
-	 public Optional<Price> getPrice(@PathVariable String id) {
-		 Optional<Price> price = priceRepository.findById(id);
+
+	@GetMapping("/price/{id}")
+	public Optional<Price> getPrice(@PathVariable int id) {
+		Optional<Price> price = priceRepository.findById(id);
 
 		return price;
 	}
 
-	 @PostMapping("/{id}")	
-	    public ResponseEntity<Price> addName(@RequestBody Price productName) {
+	@PostMapping("/{id}")
+	public ResponseEntity<Price> postName(@RequestBody Price productName) {
+		if (validatePrice(productName))
+		
+		price = priceRepository.save(productName);
 
-		 price = priceRepository.save(productName);
-	     
-		   System.out.println("Saved price="+price.toString());
-	        if (price != null)
-	            return ResponseEntity.status(HttpStatus.CREATED).body(price);
+		System.out.println("Saved price=" + price.toString());
+		if (price != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(price);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
 
-	    }
-	 
-	 @GetMapping("/price/addPrice")
-	    public ResponseEntity<Price> addName(@RequestParam String name
-										, @RequestParam String id
-										, @RequestParam String price
-										, @RequestParam String currency) {
+	// want to add some validations
+	private boolean validatePrice(Price productName) {
+		
+		return true;
+	}
+	
+	// for internal testing only
+	public Price addPrice(String name, int id, float price,
+			String currency) {
 
-			Price n = new Price();
-			n.setName(name);
-			n.setId(id);
-			n.setPrice(price);
-			n.setCurrency(currency);
-			
-			priceRepository.save(n);
-			if (name != null)
-	            return ResponseEntity.status(HttpStatus.CREATED).body(n);
-			
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	    } 
+		Price priceToAdd = new Price();
+		priceToAdd.setName(name);
+		priceToAdd.setId(id);
+		priceToAdd.setPrice(price);
+		priceToAdd.setCurrency(currency);
+
+		priceRepository.save(priceToAdd);
+		
+		return priceToAdd;
+		
+	}
+	
+	public void deletePrice(int id) {
+		priceRepository.deleteById(id);
+	}
 
 }

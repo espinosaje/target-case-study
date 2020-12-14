@@ -7,32 +7,28 @@ import org.springframework.stereotype.Repository;
 @Document(collection = "Price")
 public class Price {
 
-    private String id;
+    private int id;
     private String name;
-    private String price;
+    private float price;
     private String currency;
 
     public Price() {
 
     }
 
-    public Price(String id, String author) {
-        this.id = id;
-        this.name = author;
-    }
     
-	public Price(String id, String name, String price, String currency) {
+	public Price(int id, String name, float price, String currency) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.currency = currency;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -44,11 +40,11 @@ public class Price {
 		this.name = name;
 	}
 
-	public String getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 

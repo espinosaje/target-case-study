@@ -1,7 +1,7 @@
 package com.casestudy.target.product;
 
 public class AggregatedProduct {
-	String id;
+	int id;
 	String name;
 	CurrentPrice current_price;
 	
@@ -9,17 +9,17 @@ public class AggregatedProduct {
 		
 	}
 	
-	public AggregatedProduct(String id, String name, CurrentPrice current_price) {
+	public AggregatedProduct(int id, String name, CurrentPrice current_price) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.current_price = current_price;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public String getName() {

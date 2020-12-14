@@ -1,22 +1,17 @@
 package com.casestudy.target;
 
-import java.util.Arrays;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.junit.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import com.casestudy.target.name.RedSkyProductWrapper;
 import com.casestudy.target.name.entities.Item;
 import com.casestudy.target.name.entities.Product;
+import com.casestudy.target.price.PriceController;
 import com.casestudy.target.product.AggregatedProduct;
 import com.casestudy.target.product.AggregatedProductController;
 
@@ -37,6 +32,9 @@ class TargetApplicationTests {
 	
 	@Autowired
 	AggregatedProductController aggregatedProductController;
+	
+	@Autowired
+	PriceController priceController;
 
 	@Test
 	void contextLoads() {
@@ -54,40 +52,66 @@ class TargetApplicationTests {
 		// actual service call
 		RedSkyProductWrapper productEntity = (RedSkyProductWrapper) restTemplate.getForObject(request,RedSkyProductWrapper.class);
 		Product p = productEntity.getProduct();
-		System.out.println("###### product: " + p);
-
 		// get the main JSON object from the entity
 		Item item = p.getItem();
 
 		System.out.println("###### Item: " + item.getBuy_url());
-		//System.out.println("@@@ Item_buyURL: " + item.getBuy_url());
-		//System.out.println("@@@ Product_desc-Title: " + redSkyProduct.getItem().getProduct_description().getTitle());
 	}
 	
 	@Test
 	public void getValidAggregatedProduct() {
 		System.out.println("@@@ Starting getValidAggregatedProduct Test @@@ ");
-		
-		RestTemplate restTemplate = new RestTemplate();
-		String id = "13860428";
+		int id = 13860428;
 		
 		//String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
-		AggregatedProduct product = aggregatedProductController.retrieveExchangeValue(id);
-		System.out.println("## getValidAggregatedProduct.name: " + product.getName());
-		System.out.println("## getValidAggregatedProduct.price: " + product.getCurrent_price().getValue());
+		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
+		AggregatedProduct product = productEntity.getBody();
+		if (product != null) {
+			System.out.println("## getValidAggregatedProduct.name: " + product.getName());
+			System.out.println("## getValidAggregatedProduct.price: " + product.getCurrent_price().getValue());
+		}
+		//Assert.assertNotNull(product.getCurrent_price().getValue());
 	}
 	
 	@Test
 	public void getMissingNameAggregatedProduct() {
 		System.out.println("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
-		
-		RestTemplate restTemplate = new RestTemplate();
-		String id = "10002";
-		
-		//String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
-		AggregatedProduct product = aggregatedProductController.retrieveExchangeValue(id);
-		System.out.println("## getMissingNameAggregatedProduct.name: " + product.getName());
-		System.out.println("## getMissingNameAggregatedProduct.price: " + product.getCurrent_price().getValue());
+		int id = 10002;
+		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
+		AggregatedProduct product = productEntity.getBody();
+		if (product != null) {
+			System.out.println("## getMissingNameAggregatedProduct.name: " + product.getName());
+			System.out.println("## getMissingNameAggregatedProduct.price: " + product.getCurrent_price().getValue());
+		}
+		//Assert.assertNotNull(product.getName());
 	}
+	
+	@Test
+	public void changePrice() {
+		float price = (float) 100.0;
+		priceController.addPrice("test", 111, price , "TEST");
+		// Make sure the object was stored in the DB
+		Assert.assertTrue(priceController.getPrice(111).get().getPrice() == price);
+		// Delete it from the DB
+		priceController.deletePrice(111);
+		// Check that value is no longer in the DB
+		Assert.assertFalse(priceController.getPrice(111).isPresent());
+	}
+	
+//	@Test
+//	public void getMissingPriceAggregatedProduct() {
+//		System.out.println("@@@ Starting getMissingPriceAggregatedProduct Test @@@ ");
+//		String id = "13860428";
+//		
+//		//TODO: Remove record
+//		
+//		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveExchangeValue(id);
+//		AggregatedProduct product = productEntity.getBody();
+//		System.out.println("## getMissingPriceAggregatedProduct.name: " + product.getName());
+//		System.out.println("## getMissingPriceAggregatedProduct.price: " + product.getCurrent_price().getValue());
+//		// TODO: Add record back
+//		
+//		//Assert.assertNotNull(product.getName());
+//	}
 
 }
