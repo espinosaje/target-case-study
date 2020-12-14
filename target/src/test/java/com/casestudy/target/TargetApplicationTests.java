@@ -98,20 +98,17 @@ class TargetApplicationTests {
 		Assert.assertFalse(priceController.getPrice(111).isPresent());
 	}
 	
-//	@Test
-//	public void getMissingPriceAggregatedProduct() {
-//		System.out.println("@@@ Starting getMissingPriceAggregatedProduct Test @@@ ");
-//		String id = "13860428";
-//		
-//		//TODO: Remove record
-//		
-//		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveExchangeValue(id);
-//		AggregatedProduct product = productEntity.getBody();
-//		System.out.println("## getMissingPriceAggregatedProduct.name: " + product.getName());
-//		System.out.println("## getMissingPriceAggregatedProduct.price: " + product.getCurrent_price().getValue());
-//		// TODO: Add record back
-//		
-//		//Assert.assertNotNull(product.getName());
-//	}
+	@Test
+	public void getNoRecodsFoundAggregatedProduct() {
+		System.out.println("@@@ Starting getMissingPriceAggregatedProduct Test @@@ ");
+		int id = 010101;
+		
+		//TODO: Remove record
+		
+		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
+		AggregatedProduct product = productEntity.getBody();
+
+		Assert.assertNull(product);
+	}
 
 }
