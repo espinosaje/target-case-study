@@ -64,8 +64,10 @@ class TargetApplicationTests {
 		int id = 13860428;
 		
 		//String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
-		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
-		AggregatedProduct product = productEntity.getBody();
+		AggregatedProduct product = null;
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
+		if (productEntity.getBody().getClass() == AggregatedProduct.class)
+			product = (AggregatedProduct) productEntity.getBody();
 		if (product != null) {
 			System.out.println("## getValidAggregatedProduct.name: " + product.getName());
 			System.out.println("## getValidAggregatedProduct.price: " + product.getCurrent_price().getValue());
@@ -77,8 +79,10 @@ class TargetApplicationTests {
 	public void getMissingNameAggregatedProduct() {
 		System.out.println("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
 		int id = 10002;
-		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
-		AggregatedProduct product = productEntity.getBody();
+		AggregatedProduct product = null;
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
+		if (productEntity.getBody().getClass() == AggregatedProduct.class)
+			product = (AggregatedProduct) productEntity.getBody();
 		if (product != null) {
 			System.out.println("## getMissingNameAggregatedProduct.name: " + product.getName());
 			System.out.println("## getMissingNameAggregatedProduct.price: " + product.getCurrent_price().getValue());
@@ -102,13 +106,14 @@ class TargetApplicationTests {
 	public void getNoRecodsFoundAggregatedProduct() {
 		System.out.println("@@@ Starting getMissingPriceAggregatedProduct Test @@@ ");
 		int id = 010101;
-		
-		//TODO: Remove record
-		
-		ResponseEntity<AggregatedProduct> productEntity = aggregatedProductController.retrieveProduct(id);
-		AggregatedProduct product = productEntity.getBody();
-
-		Assert.assertNull(product);
+		ApiError error = null;
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
+		if (productEntity.getBody().getClass() == ApiError.class)
+			error = (ApiError) productEntity.getBody();
+//		if (productEntity.getBody().getClass() == AggregatedProduct.class)
+//			 product = (AggregatedProduct) productEntity.getBody();
+//
+		Assert.assertNotNull(error);
 	}
 
 }

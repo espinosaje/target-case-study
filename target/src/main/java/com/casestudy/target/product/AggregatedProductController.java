@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.casestudy.target.ApiError;
 import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
 import com.casestudy.target.name.entities.Item;
@@ -37,7 +38,7 @@ public class AggregatedProductController {
 	RedSkyProductWrapper productWrapper;
 		
 	@GetMapping("/{id}")
-	public ResponseEntity<AggregatedProduct> retrieveProduct(@PathVariable int id) {
+	public ResponseEntity<Object> retrieveProduct(@PathVariable int id) {
 
 		// get PRICE info from MongoDB
 		price = getPrice(id);
@@ -63,7 +64,8 @@ public class AggregatedProductController {
 				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
 			}
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, "not found", "record not found");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
 	}
 	
