@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.junit.Assert;
 import org.springframework.web.client.RestTemplate;
 
+import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
 import com.casestudy.target.name.entities.Item;
 import com.casestudy.target.name.entities.Product;
@@ -35,6 +36,9 @@ class TargetApplicationTests {
 	
 	@Autowired
 	PriceController priceController;
+	
+	@Autowired
+	RedSkyProductController redSkyProductController;
 
 	@Test
 	void contextLoads() {
@@ -44,18 +48,19 @@ class TargetApplicationTests {
 	@Test
 	public void getNamesFromRedSky() {
 
-		RestTemplate restTemplate = new RestTemplate();
-		
+		String id = "13860428";
 		//String request = "https://redsky.target.com/v3/pdp/tcin/13860428?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics&key=candidate";
 
 		System.out.println("@@@ Starting getNamesFromRedSky Test @@@ ");
 		// actual service call
-		RedSkyProductWrapper productEntity = (RedSkyProductWrapper) restTemplate.getForObject(request,RedSkyProductWrapper.class);
-		Product p = productEntity.getProduct();
-		// get the main JSON object from the entity
-		Item item = p.getItem();
+		//RedSkyProductWrapper productEntity = (RedSkyProductWrapper) restTemplate.getForObject(request,RedSkyProductWrapper.class);
+		ResponseEntity<RedSkyProductWrapper> res = redSkyProductController.getName(id);
+		RedSkyProductWrapper productEntity = res.getBody();
+		if (productEntity != null) {
+			Assert.assertNotNull(productEntity.getProduct());
+		}
+		redSkyProductController.getName(id);
 
-		System.out.println("###### Item: " + item.getBuy_url());
 	}
 	
 	@Test

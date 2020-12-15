@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
+@EnableCaching
 @RequestMapping("/products")
 public class PriceController {
 	@Autowired
@@ -26,19 +30,19 @@ public class PriceController {
 	private PriceRepository priceRepository;
 
 	@GetMapping("/price/{id}")
+	@Cacheable(key="#id", value="Price")
 	public Optional<Price> getPrice(@PathVariable int id) {
 		Optional<Price> price = priceRepository.findById(id);
-
 		return price;
 	}
 
 	@PostMapping("/{id}")
+	@CacheEvict(key = "#id", value = "Price")
 	public ResponseEntity<Price> postName(@RequestBody Price productName) {
 		if (validatePrice(productName))
 		
 		price = priceRepository.save(productName);
 
-		System.out.println("Saved price=" + price.toString());
 		if (price != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(price);
 		}
@@ -67,7 +71,7 @@ public class PriceController {
 		return priceToAdd;
 		
 	}
-	
+	@CacheEvict(value = "Price", key = "#id")
 	public void deletePrice(int id) {
 		priceRepository.deleteById(id);
 	}

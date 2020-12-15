@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.casestudy.target.ApiError;
+import com.casestudy.target.TargetConstants;
 import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
 import com.casestudy.target.name.entities.Item;
@@ -32,8 +33,7 @@ public class AggregatedProductController {
 	PriceController priceController;
 	@Autowired
 	RedSkyProductController nameController;
-	@Value("${config.price.default}")
-	boolean isAssignDefaultPrice;
+	
 	Price price;
 	RedSkyProductWrapper productWrapper;
 		
@@ -49,8 +49,8 @@ public class AggregatedProductController {
 		if (name != null) {
 			//aggregate data
 			//create current Price object, if Price service didn't return anything assign default value
-			double priceValue = 0.0;
-			String currency = "USD";
+			double priceValue = TargetConstants.DEAULT_PRICE;
+			String currency = TargetConstants.DEAULT_CURRENCY;
 			if (price != null) {
 				priceValue = price.getPrice();
 				currency = price.getCurrency();
@@ -64,7 +64,7 @@ public class AggregatedProductController {
 				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
 			}
 		}
-		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, "not found", "record not found");
+		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, TargetConstants.RECORD_NOT_FOUND);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
 	}
