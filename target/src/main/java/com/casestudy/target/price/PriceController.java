@@ -1,6 +1,5 @@
 package com.casestudy.target.price;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
@@ -23,8 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableCaching
 @RequestMapping("/products")
 public class PriceController {
-	@Autowired
-	private Price price; // TODO, not sure if it needs to be auto-wired
+	private Price price;
 
 	@Autowired
 	private PriceRepository priceRepository;
@@ -33,12 +30,13 @@ public class PriceController {
 	@Cacheable(key="#id", value="Price")
 	public Optional<Price> getPrice(@PathVariable int id) {
 		Optional<Price> price = priceRepository.findById(id);
+		System.out.println("################%%%%%%%%% Access PRice DB"+id);
 		return price;
 	}
 
 	@PostMapping("/{id}")
-	@CacheEvict(key = "#id", value = "Price")
-	public ResponseEntity<Price> postName(@RequestBody Price productName) {
+	@CacheEvict(value = "Price", key = "#productName.id")
+	public ResponseEntity<Price> postPrice(@RequestBody Price productName) {
 		if (validatePrice(productName))
 		
 		price = priceRepository.save(productName);
@@ -57,6 +55,7 @@ public class PriceController {
 	}
 	
 	// for internal testing only
+	@CacheEvict(key = "#id", value = "Price", condition = "#id!=null")
 	public Price addPrice(String name, int id, float price,
 			String currency) {
 
@@ -71,9 +70,10 @@ public class PriceController {
 		return priceToAdd;
 		
 	}
-	@CacheEvict(value = "Price", key = "#id")
-	public void deletePrice(int id) {
-		priceRepository.deleteById(id);
+	@CacheEvict(value = "Price", key = "#price.id")
+	public void deletePrice(Price price) {
+		//priceRepository.deleteById(id);
+		priceRepository.delete(price);
 	}
 
 }

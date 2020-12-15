@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.casestudy.target.ApiError;
+import com.casestudy.target.TargetConstants;
+
 
 @CrossOrigin
 @RestController
@@ -55,7 +58,11 @@ public class RedSkyProductController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
-	// no filter was provided for the RedSky endpoint, so it is implemented inside the method
+	/*
+	 * No filter was provided for the RedSky endpoint, so it is implemented inside
+	 * the method.
+	 * Data is cached for the ID
+	 */
 	@GetMapping("/redsky/getProduct/{id}")
 	@Cacheable(key="#id", value="RedSkyProductWrapper")
 	public ResponseEntity<RedSkyProductWrapper> getName(@PathVariable String id) {
@@ -75,6 +82,13 @@ public class RedSkyProductController {
 			return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+	
+	@GetMapping("/redsky/refreshCache/{id}")
+	@Cacheable(key="#id", value="RedSkyProductWrapper")
+	public ResponseEntity<ApiError> refreshNameCache(@PathVariable String id) {
+		ApiError error = new ApiError(HttpStatus.OK, TargetConstants.CACHE_REFRESHED+id);
+		return ResponseEntity.status(HttpStatus.OK).body(error);
 	}
 	
 }

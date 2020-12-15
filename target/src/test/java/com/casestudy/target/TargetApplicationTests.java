@@ -12,6 +12,7 @@ import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
 import com.casestudy.target.name.entities.Item;
 import com.casestudy.target.name.entities.Product;
+import com.casestudy.target.price.Price;
 import com.casestudy.target.price.PriceController;
 import com.casestudy.target.product.AggregatedProduct;
 import com.casestudy.target.product.AggregatedProductController;
@@ -59,6 +60,7 @@ class TargetApplicationTests {
 		if (productEntity != null) {
 			Assert.assertNotNull(productEntity.getProduct());
 		}
+		System.out.println("## Success getNamesFromRedSky ");
 		redSkyProductController.getName(id);
 
 	}
@@ -97,12 +99,15 @@ class TargetApplicationTests {
 	
 	@Test
 	public void changePrice() {
+		System.out.println("@@@ Starting changePrice Test @@@ ");
 		float price = (float) 100.0;
 		priceController.addPrice("test", 111, price , "TEST");
 		// Make sure the object was stored in the DB
 		Assert.assertTrue(priceController.getPrice(111).get().getPrice() == price);
+		// Should NOT call cache
+		Price p = priceController.getPrice(111).get(); 
 		// Delete it from the DB
-		priceController.deletePrice(111);
+		priceController.deletePrice(p);
 		// Check that value is no longer in the DB
 		Assert.assertFalse(priceController.getPrice(111).isPresent());
 	}

@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+/*Object use to send Not found messages in case of a query not returning results
+ *Might want to rename it as "ApiMessage" since it's also use for Cache Refresh successful message
+ **/
 public class ApiError {
 
 
