@@ -1,16 +1,17 @@
 package com.casestudy.target;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.junit.Assert;
-import org.springframework.web.client.RestTemplate;
-
 import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
-import com.casestudy.target.name.entities.Item;
 import com.casestudy.target.name.entities.Product;
 import com.casestudy.target.price.Price;
 import com.casestudy.target.price.PriceController;
@@ -41,33 +42,30 @@ class TargetApplicationTests {
 	@Autowired
 	RedSkyProductController redSkyProductController;
 
-	@Test
-	void contextLoads() {
-		
-	}
+	private static final Logger LOG = LoggerFactory.getLogger(TargetApplicationTests.class);
 	
 	@Test
-	public void getNamesFromRedSky() {
+	public void testNamesFromRedSky() {
 
 		String id = "13860428";
 		//String request = "https://redsky.target.com/v3/pdp/tcin/13860428?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics&key=candidate";
 
-		System.out.println("@@@ Starting getNamesFromRedSky Test @@@ ");
+		LOG.info("@@@ Starting getNamesFromRedSky Test @@@ ");
 		// actual service call
 		//RedSkyProductWrapper productEntity = (RedSkyProductWrapper) restTemplate.getForObject(request,RedSkyProductWrapper.class);
 		ResponseEntity<RedSkyProductWrapper> res = redSkyProductController.getName(id);
 		RedSkyProductWrapper productEntity = res.getBody();
 		if (productEntity != null) {
-			Assert.assertNotNull(productEntity.getProduct());
+			Assert.assertTrue(productEntity.getProduct().getClass() == Product.class);
 		}
-		System.out.println("## Success getNamesFromRedSky ");
+		LOG.info("## Success getNamesFromRedSky ");
 		redSkyProductController.getName(id);
 
 	}
 	
 	@Test
-	public void getValidAggregatedProduct() {
-		System.out.println("@@@ Starting getValidAggregatedProduct Test @@@ ");
+	public void testValidAggregatedProduct() {
+		LOG.info("@@@ Starting getValidAggregatedProduct Test @@@ ");
 		int id = 13860428;
 		
 		//String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
@@ -76,54 +74,50 @@ class TargetApplicationTests {
 		if (productEntity.getBody().getClass() == AggregatedProduct.class)
 			product = (AggregatedProduct) productEntity.getBody();
 		if (product != null) {
-			System.out.println("## getValidAggregatedProduct.name: " + product.getName());
-			System.out.println("## getValidAggregatedProduct.price: " + product.getCurrent_price().getValue());
+			Assert.assertNotNull(product.getCurrent_price().getValue());
 		}
-		//Assert.assertNotNull(product.getCurrent_price().getValue());
 	}
 	
 	@Test
-	public void getMissingNameAggregatedProduct() {
-		System.out.println("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
+	public void testMissingNameAggregatedProduct() {
+		LOG.info("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
 		int id = 10002;
 		AggregatedProduct product = null;
 		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
 		if (productEntity.getBody().getClass() == AggregatedProduct.class)
 			product = (AggregatedProduct) productEntity.getBody();
 		if (product != null) {
-			System.out.println("## getMissingNameAggregatedProduct.name: " + product.getName());
-			System.out.println("## getMissingNameAggregatedProduct.price: " + product.getCurrent_price().getValue());
+			Assert.assertNotNull(product.getName());
 		}
-		//Assert.assertNotNull(product.getName());
 	}
 	
 	@Test
-	public void changePrice() {
-		System.out.println("@@@ Starting changePrice Test @@@ ");
-		float price = (float) 100.0;
-		priceController.addPrice("test", 111, price , "TEST");
+	public void testChangePrice() {
+		LOG.info("@@@ Starting changePrice Test @@@ ");
+		float test_price = (float) 100.0;
+		int id = 1010101;
+		priceController.addPrice("test", id, test_price , "TEST");
 		// Make sure the object was stored in the DB
-		Assert.assertTrue(priceController.getPrice(111).get().getPrice() == price);
+		Assert.assertTrue(priceController.getPrice(id).get().getPrice() == test_price);
 		// Should NOT call cache
-		Price p = priceController.getPrice(111).get(); 
+		Price p = priceController.getPrice(id).get(); 
 		// Delete it from the DB
 		priceController.deletePrice(p);
 		// Check that value is no longer in the DB
-		Assert.assertFalse(priceController.getPrice(111).isPresent());
+		Assert.assertFalse(priceController.getPrice(id).isPresent());
 	}
 	
 	@Test
-	public void getNoRecodsFoundAggregatedProduct() {
-		System.out.println("@@@ Starting getMissingPriceAggregatedProduct Test @@@ ");
-		int id = 010101;
+	public void testNoRecodsFoundAggregatedProduct() {
+		LOG.info("@@@ Starting testNoRecodsFoundAggregatedProduct Test @@@ ");
+		int id = 1010101; // give an ID that doesn't exist
 		ApiError error = null;
 		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
-		if (productEntity.getBody().getClass() == ApiError.class)
+		if (productEntity.getBody().getClass() == ApiError.class) {
 			error = (ApiError) productEntity.getBody();
-//		if (productEntity.getBody().getClass() == AggregatedProduct.class)
-//			 product = (AggregatedProduct) productEntity.getBody();
-//
-		Assert.assertNotNull(error);
+			Assert.assertTrue(error.getMessage().equals(TargetConstants.RECORD_NOT_FOUND));
+			
+		}
 	}
 
 }

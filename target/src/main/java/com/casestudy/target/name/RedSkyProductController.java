@@ -1,7 +1,11 @@
 package com.casestudy.target.name;
 
 import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpEntity;
@@ -20,13 +24,13 @@ import org.springframework.web.client.RestTemplate;
 import com.casestudy.target.ApiError;
 import com.casestudy.target.TargetConstants;
 
-
 @CrossOrigin
 @RestController
 @EnableCaching
 @RequestMapping("/products")
 public class RedSkyProductController {
 	HttpEntity<String> entityReq;
+	private static final Logger LOG = LoggerFactory.getLogger(RedSkyProductController.class);
 	@Value("${redsky.endpoint}")
 	private String request;
 
@@ -79,16 +83,19 @@ public class RedSkyProductController {
 		&& productWrapper.getProduct() != null
 		&& productWrapper.getProduct().getAvailable_to_promise_network() != null
 		&& productWrapper.getProduct().getAvailable_to_promise_network().getProduct_id().equals(id)) {
+			LOG.info("Pulled product ID "+id+" from the Redsky API");
 			return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
 		}
+		LOG.info("Product ID "+id+" NOT found the Redsky API");
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	@GetMapping("/redsky/refreshCache/{id}")
-	@Cacheable(key="#id", value="RedSkyProductWrapper")
+	@CacheEvict(key="#id", value="RedSkyProductWrapper")
 	public ResponseEntity<ApiError> refreshNameCache(@PathVariable String id) {
-		ApiError error = new ApiError(HttpStatus.OK, TargetConstants.CACHE_REFRESHED+id);
-		return ResponseEntity.status(HttpStatus.OK).body(error);
+		LOG.info(TargetConstants.CACHE_REFRESHED+id);
+		ApiError message = new ApiError(HttpStatus.OK, TargetConstants.CACHE_REFRESHED+id);
+		return ResponseEntity.status(HttpStatus.OK).body(message);
 	}
 	
 }
