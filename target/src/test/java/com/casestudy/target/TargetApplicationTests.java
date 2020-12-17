@@ -70,6 +70,9 @@ class TargetApplicationTests {
 
 	}
 	
+	/*
+	 * Fetches a record from BOTH sources and aggregates the data
+	 */
 	@Test
 	public void testValidAggregatedProduct() {
 		LOG.info("@@@ Starting getValidAggregatedProduct Test @@@ ");
@@ -87,7 +90,10 @@ class TargetApplicationTests {
 			LOG.info("Could not build aggregated product: "+valid_id);
 		}
 	}
-	
+
+	/*
+	 * Fetches a record that ONLY exists in the Price DB (NoSQL)
+	 */
 	@Test
 	public void testMissingNameAggregatedProduct() {
 		LOG.info("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
@@ -106,7 +112,11 @@ class TargetApplicationTests {
 			}
 		}	
 	}
-	
+
+	/*
+	 * Inserts a new record in the Price database, it verifies that the value comes
+	 * back from the DB then deletes the record and checks that no value is returned
+	 */
 	@Test
 	public void testChangePrice() {
 		LOG.info("@@@ Starting changePrice Test @@@ ");
@@ -122,6 +132,9 @@ class TargetApplicationTests {
 		Assert.assertFalse(priceController.getPrice(test_id).isPresent());
 	}
 	
+	/*
+	 * looks for a record which doesn't exist in either source
+	 */
 	@Test
 	public void testNoRecodsFoundAggregatedProduct() {
 		LOG.info("@@@ Starting testNoRecodsFoundAggregatedProduct Test @@@ ");

@@ -42,25 +42,6 @@ public class RedSkyProductController {
 		// headers.set("x-api-key", "2f7b7e46-b66a-4281-8ac4-821cf1a03efb");
 		entityReq = new HttpEntity<String>(headers);
 	}
-
-	@GetMapping("/redsky/getAllProducts")
-	public ResponseEntity<RedSkyProductWrapper> getAllNames() {
-
-		RestTemplate restTemplate = new RestTemplate();
-
-		// external service call
-		ResponseEntity<RedSkyProductWrapper> productEntity = (ResponseEntity<RedSkyProductWrapper>) restTemplate.exchange(request,
-				HttpMethod.GET, entityReq, RedSkyProductWrapper.class);
-		
-		// get the main JSON object from the entity
-		RedSkyProductWrapper productWrapper = (RedSkyProductWrapper) productEntity.getBody();
-		
-
-		if (productWrapper != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
-		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	}
 	
 	/*
 	 * No filter was provided for the RedSky endpoint, so it is implemented inside

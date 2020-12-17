@@ -93,9 +93,7 @@ public class AggregatedProductController {
 	private String getProductName(String id) {
 		String name = null;
 		// call the external API (redsky)
-		ResponseEntity<RedSkyProductWrapper> redSkyProductResponse = 
-				// nameController.getAllNames();
-				nameController.getName(id);
+		ResponseEntity<RedSkyProductWrapper> redSkyProductResponse = nameController.getName(id);
 		// Navigate through all the objects in the response to get to the TITLE
 		if (redSkyProductResponse != null) {
 			productWrapper = redSkyProductResponse.getBody();
