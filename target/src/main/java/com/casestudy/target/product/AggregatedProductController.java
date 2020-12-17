@@ -69,8 +69,8 @@ public class AggregatedProductController {
 				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
 			}
 		}
-		ApiMessage error = new ApiMessage(HttpStatus.NO_CONTENT, TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(error);
+		ApiMessage error = new ApiMessage(HttpStatus.BAD_REQUEST, TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
 	}
 	

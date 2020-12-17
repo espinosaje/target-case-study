@@ -1,10 +1,8 @@
 package com.casestudy.target.name.entities;
-
-import com.casestudy.target.PrintableJson;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Product extends PrintableJson{
+public class Product{
 
     private Item item;
     private AvailableToPromiseNetwork available_to_promise_network;
