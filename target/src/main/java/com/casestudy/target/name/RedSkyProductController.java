@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.casestudy.target.ApiError;
+import com.casestudy.target.ApiMessage;
 import com.casestudy.target.TargetConstants;
 
 @CrossOrigin
@@ -73,9 +73,9 @@ public class RedSkyProductController {
 	
 	@GetMapping("/redsky/refreshCache/{id}")
 	@CacheEvict(key="#id", value="RedSkyProductWrapper")
-	public ResponseEntity<ApiError> refreshNameCache(@PathVariable String id) {
+	public ResponseEntity<ApiMessage> refreshNameCache(@PathVariable String id) {
 		LOG.info(TargetConstants.SERVICE_MSG_CACHE_REFRESHED+id);
-		ApiError message = new ApiError(HttpStatus.OK, TargetConstants.SERVICE_MSG_CACHE_REFRESHED+id);
+		ApiMessage message = new ApiMessage(HttpStatus.OK, TargetConstants.SERVICE_MSG_CACHE_REFRESHED+id);
 		return ResponseEntity.status(HttpStatus.OK).body(message);
 	}
 	

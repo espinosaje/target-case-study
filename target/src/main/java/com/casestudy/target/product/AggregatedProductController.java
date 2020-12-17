@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.casestudy.target.ApiError;
+import com.casestudy.target.ApiMessage;
 import com.casestudy.target.TargetConstants;
 import com.casestudy.target.name.RedSkyProductController;
 import com.casestudy.target.name.RedSkyProductWrapper;
@@ -69,8 +69,8 @@ public class AggregatedProductController {
 				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
 			}
 		}
-		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+		ApiMessage error = new ApiMessage(HttpStatus.NO_CONTENT, TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(error);
 
 	}
 	

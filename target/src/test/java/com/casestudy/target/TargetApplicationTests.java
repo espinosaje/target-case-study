@@ -138,10 +138,10 @@ class TargetApplicationTests {
 	@Test
 	public void testNoRecodsFoundAggregatedProduct() {
 		LOG.info("@@@ Starting testNoRecodsFoundAggregatedProduct Test @@@ ");
-		ApiError error = null;
+		ApiMessage error = null;
 		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(test_id);
-		if (productEntity.getBody().getClass() == ApiError.class) {
-			error = (ApiError) productEntity.getBody();
+		if (productEntity.getBody().getClass() == ApiMessage.class) {
+			error = (ApiMessage) productEntity.getBody();
 			Assert.assertTrue(error.getMessage().equals(TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND));
 			
 		}
