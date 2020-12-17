@@ -24,9 +24,12 @@ The following tools are needed to build, execute and test the project.
 - Maven
 - Docker
 
-Running the application.
+Running the application
 - Checkout the code as a Maven project (it was developed using Eclipse)
 - Run the "Maven Install" command
 - Run Image/create container with the command "docker run -p 8090:8080 target-case-study:target-image" (or run the image from Docker Desktop)
 
-Testing.
+Testing
+
+The generated image is deployed to Amazon Web Services's ECR and a task is running on AWS's ECS. The below Postman collection has groups of requests to test on Localhost, Local container (started on port 8090) and AWS.
+https://www.getpostman.com/collections/865e9d44182b6d0370c0
