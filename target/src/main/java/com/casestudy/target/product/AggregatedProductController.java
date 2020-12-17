@@ -2,6 +2,8 @@ package com.casestudy.target.product;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -36,6 +38,8 @@ public class AggregatedProductController {
 	
 	Price price;
 	RedSkyProductWrapper productWrapper;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AggregatedProductController.class);
 		
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> retrieveProduct(@PathVariable int id) {
@@ -45,9 +49,9 @@ public class AggregatedProductController {
 		// get NAME from external API, if it doesn't find one it gets the name from the Price
 		String name = getProductName(String.valueOf(id));
 		
-		// if NAME is NULL it means there are no records of Product or Price, there no response to create
+		// if NAME is NULL it means there are no records of Product or Price, there's no response to create
 		if (name != null) {
-			//aggregate data
+		//aggregate data
 			//create current Price object, if Price service didn't return anything assign default value
 			double priceValue = TargetConstants.DEAULT_PRICE;
 			String currency = TargetConstants.DEAULT_CURRENCY;
@@ -61,14 +65,19 @@ public class AggregatedProductController {
 			AggregatedProduct aggregatedProduct = new AggregatedProduct(id, name, currentPrice);	
 	
 			if (aggregatedProduct != null) {
+				LOG.info(TargetConstants.SERVICE_MSG_AGGREGATED_PRODUCT+aggregatedProduct);
 				return ResponseEntity.status(HttpStatus.OK).body(aggregatedProduct);
 			}
 		}
-		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, TargetConstants.RECORD_NOT_FOUND);
+		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
 	}
 	
+	/* 
+	 * gets Price from MongoDB, making sure the Optional object is present to about a NULL pointer
+	 * if error handling is implemented in Price, we might have to change this to check for obj type 
+	 * */
 	private Price getPrice(int id) {
 		Optional<Price> optionalPrice = priceController.getPrice(id);
 		if(!optionalPrice.isPresent()) {
@@ -78,7 +87,9 @@ public class AggregatedProductController {
 		return priceController.getPrice(id).get();
 	}
 	
-	// get name from the RedSky call, assigns a default value if not found
+	/* 
+	 * get name from the RedSky call, assigns a default value if not found 
+	 * */
 	private String getProductName(String id) {
 		String name = null;
 		// call the external API (redsky)

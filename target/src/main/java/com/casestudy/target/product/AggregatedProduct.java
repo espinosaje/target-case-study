@@ -1,6 +1,8 @@
 package com.casestudy.target.product;
 
-public class AggregatedProduct {
+import com.casestudy.target.PrintableJson;
+
+public class AggregatedProduct  extends PrintableJson{
 	int id;
 	String name;
 	CurrentPrice current_price;

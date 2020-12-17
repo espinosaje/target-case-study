@@ -83,18 +83,18 @@ public class RedSkyProductController {
 		&& productWrapper.getProduct() != null
 		&& productWrapper.getProduct().getAvailable_to_promise_network() != null
 		&& productWrapper.getProduct().getAvailable_to_promise_network().getProduct_id().equals(id)) {
-			LOG.info("Pulled product ID "+id+" from the Redsky API");
+			LOG.info(TargetConstants.SERVICE_MSG_REDSKY_RETRIEVE + id);
 			return ResponseEntity.status(HttpStatus.OK).body(productWrapper);
 		}
-		LOG.info("Product ID "+id+" NOT found the Redsky API");
+		LOG.info(TargetConstants.SERVICE_MSG_REDSKY_NOT_FOUND + id);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	@GetMapping("/redsky/refreshCache/{id}")
 	@CacheEvict(key="#id", value="RedSkyProductWrapper")
 	public ResponseEntity<ApiError> refreshNameCache(@PathVariable String id) {
-		LOG.info(TargetConstants.CACHE_REFRESHED+id);
-		ApiError message = new ApiError(HttpStatus.OK, TargetConstants.CACHE_REFRESHED+id);
+		LOG.info(TargetConstants.SERVICE_MSG_CACHE_REFRESHED+id);
+		ApiError message = new ApiError(HttpStatus.OK, TargetConstants.SERVICE_MSG_CACHE_REFRESHED+id);
 		return ResponseEntity.status(HttpStatus.OK).body(message);
 	}
 	

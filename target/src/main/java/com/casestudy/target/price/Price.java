@@ -2,10 +2,11 @@ package com.casestudy.target.price;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Repository;
+import com.casestudy.target.PrintableJson;
 
 @Repository
 @Document(collection = "Price")
-public class Price {
+public class Price extends PrintableJson{
 
     private int id;
     private String name;
@@ -55,6 +56,5 @@ public class Price {
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
-	
 	
 }

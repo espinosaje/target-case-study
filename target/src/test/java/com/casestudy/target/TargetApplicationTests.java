@@ -42,23 +42,30 @@ class TargetApplicationTests {
 	@Autowired
 	RedSkyProductController redSkyProductController;
 
+	private final float test_price = TargetConstants.UNIT_TEST_PRICE;
+	private final int test_id = TargetConstants.UNIT_TEST_ID;
+	private final String test_name = TargetConstants.UNIT_TEST_NAME;
+	private final int valid_id = TargetConstants.UNIT_TEST_VALID_ID;
+	
 	private static final Logger LOG = LoggerFactory.getLogger(TargetApplicationTests.class);
 	
 	@Test
 	public void testNamesFromRedSky() {
 
-		String id = "13860428";
-		//String request = "https://redsky.target.com/v3/pdp/tcin/13860428?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics&key=candidate";
-
+		String id = String.valueOf(valid_id);
 		LOG.info("@@@ Starting getNamesFromRedSky Test @@@ ");
 		// actual service call
-		//RedSkyProductWrapper productEntity = (RedSkyProductWrapper) restTemplate.getForObject(request,RedSkyProductWrapper.class);
+		
 		ResponseEntity<RedSkyProductWrapper> res = redSkyProductController.getName(id);
 		RedSkyProductWrapper productEntity = res.getBody();
 		if (productEntity != null) {
 			Assert.assertTrue(productEntity.getProduct().getClass() == Product.class);
+			LOG.info("Successfully retrieve from Redsky: "+id);
 		}
-		LOG.info("## Success getNamesFromRedSky ");
+		else {
+			LOG.info("ID not found on Redsky: "+id);
+		}
+		
 		redSkyProductController.getName(id);
 
 	}
@@ -66,56 +73,63 @@ class TargetApplicationTests {
 	@Test
 	public void testValidAggregatedProduct() {
 		LOG.info("@@@ Starting getValidAggregatedProduct Test @@@ ");
-		int id = 13860428;
-		
+
 		//String request_ap = localhost+aggregatedproductUri+aggregatedproductId;
 		AggregatedProduct product = null;
-		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(valid_id);
 		if (productEntity.getBody().getClass() == AggregatedProduct.class)
 			product = (AggregatedProduct) productEntity.getBody();
 		if (product != null) {
 			Assert.assertNotNull(product.getCurrent_price().getValue());
+			LOG.info("Successfully retrieve aggregated product ID: "+valid_id);
+		}
+		else {
+			LOG.info("Could not build aggregated product: "+valid_id);
 		}
 	}
 	
 	@Test
 	public void testMissingNameAggregatedProduct() {
 		LOG.info("@@@ Starting getMissingNameAggregatedProduct Test @@@ ");
-		int id = 10002;
 		AggregatedProduct product = null;
-		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
-		if (productEntity.getBody().getClass() == AggregatedProduct.class)
+		// insert a NoSQL record to make sure it is there
+		Price priceAdded = priceController.addPrice(test_name, test_id, test_price , TargetConstants.DEAULT_CURRENCY);
+
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(test_id);
+		if (productEntity.getBody().getClass() == AggregatedProduct.class) {
 			product = (AggregatedProduct) productEntity.getBody();
-		if (product != null) {
-			Assert.assertNotNull(product.getName());
-		}
+			if (product != null) {
+				Assert.assertNotNull(product.getName());
+				LOG.info("Aggregated product from NoSQL : "+test_id);
+				// Delete it newly created record from the NoSQL DB
+				priceController.deletePrice(priceAdded);
+			}
+		}	
 	}
 	
 	@Test
 	public void testChangePrice() {
 		LOG.info("@@@ Starting changePrice Test @@@ ");
-		float test_price = (float) 100.0;
-		int id = 1010101;
-		priceController.addPrice("test", id, test_price , "TEST");
+		
+		priceController.addPrice(test_name, test_id, test_price , TargetConstants.DEAULT_CURRENCY);
 		// Make sure the object was stored in the DB
-		Assert.assertTrue(priceController.getPrice(id).get().getPrice() == test_price);
+		Assert.assertTrue(priceController.getPrice(test_id).get().getPrice() == test_price);
 		// Should NOT call cache
-		Price p = priceController.getPrice(id).get(); 
+		Price p = priceController.getPrice(test_id).get(); 
 		// Delete it from the DB
 		priceController.deletePrice(p);
 		// Check that value is no longer in the DB
-		Assert.assertFalse(priceController.getPrice(id).isPresent());
+		Assert.assertFalse(priceController.getPrice(test_id).isPresent());
 	}
 	
 	@Test
 	public void testNoRecodsFoundAggregatedProduct() {
 		LOG.info("@@@ Starting testNoRecodsFoundAggregatedProduct Test @@@ ");
-		int id = 1010101; // give an ID that doesn't exist
 		ApiError error = null;
-		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(id);
+		ResponseEntity<Object> productEntity = aggregatedProductController.retrieveProduct(test_id);
 		if (productEntity.getBody().getClass() == ApiError.class) {
 			error = (ApiError) productEntity.getBody();
-			Assert.assertTrue(error.getMessage().equals(TargetConstants.RECORD_NOT_FOUND));
+			Assert.assertTrue(error.getMessage().equals(TargetConstants.SERVICE_MSG_RECORD_NOT_FOUND));
 			
 		}
 	}

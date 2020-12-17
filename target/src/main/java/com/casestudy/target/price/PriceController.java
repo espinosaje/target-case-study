@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.casestudy.target.TargetConstants;
+
 @CrossOrigin
 @RestController
 @EnableCaching
@@ -29,11 +31,18 @@ public class PriceController {
 	@Autowired
 	private PriceRepository priceRepository;
 
+	/* TODO: Add error handling, return ApiError object if Price is not found */
 	@GetMapping("/price/{id}")
 	@Cacheable(key="#id", value="Price")
 	public Optional<Price> getPrice(@PathVariable int id) {
 		Optional<Price> price = priceRepository.findById(id);
-		LOG.info("Access Price DB (NoSQL) for record: "+id);
+		if (price.isPresent()) {
+			LOG.info(TargetConstants.SERVICE_MSG_NOSQL_RETRIEVE + id);
+		}
+		else {
+			LOG.info(TargetConstants.SERVICE_MSG_NOSQL_NOT_FOUND + id);
+		}
+		
 		return price;
 	}
 
@@ -44,7 +53,7 @@ public class PriceController {
 		price = priceRepository.save(productName);
 
 		if (price != null) {
-			LOG.info("Updated Price record"+productName.getId()+" on DB (NoSQL)");
+			LOG.info(TargetConstants.SERVICE_MSG_NOSQL_PRICE_UPDATED + productName.getId());
 			return ResponseEntity.status(HttpStatus.CREATED).body(price);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -63,7 +72,7 @@ public class PriceController {
 		priceToAdd.setCurrency(currency);
 
 		priceRepository.save(priceToAdd);
-		
+		LOG.info("Created Price record:  "+priceToAdd.toString());
 		return priceToAdd;
 		
 	}
@@ -71,6 +80,7 @@ public class PriceController {
 	public void deletePrice(Price price) {
 		//priceRepository.deleteById(id);
 		priceRepository.delete(price);
+		LOG.info("Deleted record "+price.getId()+" from DB (NoSQL)");
 	}
 
 }
