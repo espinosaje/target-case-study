@@ -71,7 +71,8 @@
 						<id>default</id>
 						<goals>
 							<goal>build</goal>
-							<goal>push</goal>
+							<!-- "push" might be unnecessary -->
+							<!-- <goal>push</goal> -->
 						</goals>
 					</execution>
 				</executions>
