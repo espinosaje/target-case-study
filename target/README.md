@@ -16,6 +16,19 @@ It uses Github for code versioning, accessed through the Eclipse plugin. Jenkins
 Error Handling is only implemented in the main controller since it is the only one that is supposed to be exposed to consuming applications.
 
 ========================================================
+====================== Links ===========================
+========================================================
+
+MongoDB - used princesita for login:
+https://cloud.mongodb.com/v2/5fd4153d84833d6eab964146#clusters
+
+Jira:
+https://espinosachavez.atlassian.net/secure/RapidBoard.jspa?rapidView=6
+
+AWS:
+Used princesita account
+
+========================================================
 =============== Building the project ===================
 ========================================================
 
@@ -23,6 +36,7 @@ The following tools are needed to build, execute and test the project.
 - Java 8 SDK (later versions might work too)
 - Maven
 - Docker
+- AWS CLI
 
 Running the application
 - Checkout the code as a Maven project (it was developed using Eclipse)
