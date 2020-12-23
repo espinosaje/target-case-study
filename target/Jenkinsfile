@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    environment {
+    	// need to pull credentials from Jenkins variables or enter them here
+        AWS_ACCESS_KEY_ID     = ''
+        AWS_SECRET_ACCESS_KEY = ''
+        registryCredential = 'dockerhub'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                // Get code from a GitHub repository
+                git 'https://github.com/espinosaje/target-case-study'
+                // logout to avoid an error when accessing Docker registry
+                bat "docker logout"
+                // run the maven build
+                bat "mvn -f target/pom.xml -Dmaven.test.failure.ignore=true clean package"
+               
+            }
+
+            post {
+                success {
+                    // login to AWS
+                    bat "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w4v6k4t9"
+                    // tag the image
+                    bat "docker tag target-case-study:target-image public.ecr.aws/w4v6k4t9/target-case-study:target-image"
+                    // push to ECR
+                    bat "docker push public.ecr.aws/w4v6k4t9/target-case-study:target-image"
+                }
+            }
+        }
+    }
+}
